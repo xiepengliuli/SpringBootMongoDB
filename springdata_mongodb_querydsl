@@ -1,0 +1,40 @@
+1.下載依赖
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-mongodb</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb.morphia</groupId>
+			<artifactId>morphia</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+		
+2.配置build
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+				<version>1.1.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/generated-sources/java</outputDirectory>
+							<processor>com.querydsl.apt.morphia.MorphiaAnnotationProcessor</processor>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>		
+
+3.mongo实体添加注解
+	   import org.mongodb.morphia.annotations.Entity;
+
+	   @Entity
+	   public class User {
+	   
+4.maven bulid : clean install
