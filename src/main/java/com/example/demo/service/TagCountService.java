@@ -1,10 +1,6 @@
 package com.example.demo.service;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,10 +11,13 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.bean.mongo.PTagCount;
 import com.example.demo.bean.mongo.TagCount;
+import com.example.demo.bean.mongo.ZipInfo;
+import com.example.demo.bean.mongo.ZipInfoStats;
 import com.example.demo.dao.mongo.TagCountDao;
 
 @Service
@@ -55,21 +54,38 @@ public class TagCountService {
 		return tagCount;
 	}
 
-	
 	public Object aggregation3() {
 		
-		Aggregation agg = newAggregation(//
-				project("tag"), //
-				unwind("tag"), //
-				group("tag").count().as("count"), //
-				project("count").and("tag").previousOperation(), //
-				sort(Direction.DESC, "count")//
-				);
 		
-		AggregationResults<PTagCount> results = mongoOperations.aggregate(agg, "tagCount", PTagCount.class);
-		List<PTagCount> tagCount = results.getMappedResults();
+		initZipInfoStats();
 		
-		return tagCount;
+
+		TypedAggregation<ZipInfo> aggregation = newAggregation(ZipInfo.class, group("state", "city")//
+				.sum("population").as("pop"), //
+				sort(Direction.ASC, "pop", "state", "city"), //
+				group("state")//
+						.last("city").as("biggestCity")//
+						.last("pop").as("biggestPop")//
+						.first("city").as("smallestCity")//
+						.first("pop").as("smallestPop"), //
+				project()//
+						.and("state").previousOperation()//
+						.and("biggestCity")//
+						.nested(bind("name", "biggestCity").and("population", "biggestPop"))//
+						.and("smallestCity")//
+						.nested(bind("name", "smallestCity").and("population", "smallestPop")), //
+				sort(Direction.ASC, "state")//
+		);
+
+		AggregationResults<ZipInfoStats> result = mongoOperations.aggregate(aggregation, ZipInfoStats.class);
+		ZipInfoStats firstZipInfoStats = result.getMappedResults().get(0);
+
+		return firstZipInfoStats;
+	}
+
+private void initZipInfoStats() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void initData() {

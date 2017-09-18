@@ -4,26 +4,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.service.TagCountService;
+import com.example.demo.service.ZipInfoService;
 
 @RestController
-@RequestMapping("/tagCount")
-public class TagCountController {
+@RequestMapping("/zipInfo")
+public class ZipInfoController {
 
 	@Autowired
-	private TagCountService tagCountService;
+	private ZipInfoService zipInfoService;
 
+	@RequestMapping("/init")
+	public Object init() {
+		return zipInfoService.init();
+	}
 	@RequestMapping("/aggregation1")
 	public Object aggregation1() {
-		return tagCountService.aggregation1();
+		return zipInfoService.aggregation1();
 	}
 	@RequestMapping("/aggregation2")
 	public Object aggregation2() {
-		return tagCountService.aggregation2();
-	}
-	@RequestMapping("/aggregation3")
-	public Object aggregation3() {
-		return tagCountService.aggregation3();
+		return zipInfoService.aggregation2();
 	}
 
 }
