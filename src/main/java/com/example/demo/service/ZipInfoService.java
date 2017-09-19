@@ -1,12 +1,10 @@
 package com.example.demo.service;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.bind;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +12,10 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.bean.mongo.City;
+import com.example.demo.bean.mongo.StateStats;
 import com.example.demo.bean.mongo.ZipInfo;
 import com.example.demo.bean.mongo.ZipInfoStats;
 import com.example.demo.dao.mongo.ZipInfoDao;
@@ -56,8 +55,24 @@ public class ZipInfoService {
 		);
 
 		AggregationResults<ZipInfoStats> result = mongoOperations.aggregate(aggregation, ZipInfoStats.class);
+		//下面的更通用些,只不过上边是用的对象的思想
+		//		AggregationResults<ZipInfoStats> result = mongoOperations.aggregate(aggregation, ZipInfoStats.class);
 		ZipInfoStats firstZipInfoStats = result.getMappedResults().get(0);
+		
+		return result.getMappedResults();
+	}
+	public Object aggregation3() {
+		
+		TypedAggregation<ZipInfo> agg = newAggregation(ZipInfo.class,
+			    group("state").sum("population").as("totalPop"),
+			    sort(Direction.ASC, previousOperation(), "totalPop"),
+			    match(Criteria.where("totalPop").gte(100))
+			);
 
+			AggregationResults<StateStats> result = mongoOperations.aggregate(agg, StateStats.class);
+//		List<StateStats> stateStatsList = result.getMappedResults();
+//			AggregationResults<Map> result = mongoOperations.aggregate(agg, Map.class);
+//			List<Map> stateStatsList = result.getMappedResults();
 		
 		return result.getMappedResults();
 	}

@@ -25,5 +25,9 @@ public class ZipInfoController {
 	public Object aggregation2() {
 		return zipInfoService.aggregation2();
 	}
+	@RequestMapping("/aggregation3")
+	public Object aggregation3() {
+		return zipInfoService.aggregation3();
+	}
 
 }
