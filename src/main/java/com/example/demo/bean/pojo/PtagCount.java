@@ -1,9 +1,7 @@
-package com.example.demo.bean.mongo;
+package com.example.demo.bean.pojo;
 
-import org.mongodb.morphia.annotations.Entity;
 
-@Entity
-public class PTagCount {
+public class PtagCount {
 	public String tag;
 	public int count;
 	public String name;

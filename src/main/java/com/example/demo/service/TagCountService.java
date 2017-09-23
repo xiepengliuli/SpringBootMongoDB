@@ -1,6 +1,11 @@
 package com.example.demo.service;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.bind;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +19,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.bean.mongo.PTagCount;
 import com.example.demo.bean.mongo.TagCount;
 import com.example.demo.bean.mongo.ZipInfo;
 import com.example.demo.bean.mongo.ZipInfoStats;
@@ -48,8 +52,8 @@ public class TagCountService {
 				sort(Direction.DESC, "count")//
 		);
 
-		AggregationResults<PTagCount> results = mongoOperations.aggregate(agg, "tagCount", PTagCount.class);
-		List<PTagCount> tagCount = results.getMappedResults();
+		AggregationResults<TagCount> results = mongoOperations.aggregate(agg, "tagCount", TagCount.class);
+		List<TagCount> tagCount = results.getMappedResults();
 
 		return tagCount;
 	}

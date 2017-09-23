@@ -25,6 +25,10 @@ public class ZipInfoController {
 	public Object data2() {
 		return zipInfoService.data2();
 	}
+	@RequestMapping("/data3")
+	public Object data3() {
+		return zipInfoService.data3();
+	}
 	
 	@RequestMapping("/aggregation1")
 	public Object aggregation1() {
@@ -49,6 +53,10 @@ public class ZipInfoController {
 	@RequestMapping("/aggregation6")
 	public Object aggregation6() {
 		return zipInfoService.aggregation6();
+	}
+	@RequestMapping("/aggregation7")
+	public Object aggregation7() {
+		return zipInfoService.aggregation7();
 	}
 
 }
